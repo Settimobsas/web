@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La Granada · Menú</title>
+
+  <!-- Bootstrap 5 (CDN). Para uso sin conexión, descarga los archivos y cambia las rutas. -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== Personalización: cambia estos valores para adaptar la marca ===== */
+    :root {
+      --paper: #f4f6f1;
+      --ink: #17241e;
+      --muted: #5e6b63;
+      --line: #c3ccc0;
+      --accent: #9e2a3a;
+      --accent-ink: #ffffff;
+      --font-display: "Young Serif", Georgia, "Times New Roman", serif;
+      --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #121a16;
+        --ink: #e8ede6;
+        --muted: #9aa89f;
+        --line: #33403a;
+        --accent: #e0707f;
+        --accent-ink: #121a16;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.55;
+    }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
+
+    /* Encabezado */
+    .hero { padding: 3.5rem 0 2rem; }
+    .hero h1 { font-size: clamp(2.6rem, 9vw, 5rem); line-height: 1; letter-spacing: -0.01em; margin: 0; }
+    .hero p { color: var(--muted); max-width: 46ch; margin: 1rem 0 0; }
+
+    /* Navegación de categorías (fija y con desplazamiento horizontal en móvil) */
+    .top-nav {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+    }
+    /* Pestañas principales */
+    .main-tabs { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.75rem; scrollbar-width: none; }
+    .main-tabs::-webkit-scrollbar { display: none; }
+    .main-tabs .nav-link {
+      border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none;
+      padding: .85rem 0 .7rem; color: var(--muted); font-weight: 600; white-space: nowrap;
+    }
+    .main-tabs .nav-link:hover { color: var(--ink); }
+    .main-tabs .nav-link.active { color: var(--ink); border-bottom-color: var(--accent); background: none; }
+    .main-tabs .nav-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .cat-nav { border-top: 1px solid var(--line); }
+    .cat-nav .nav { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: .25rem; padding: .5rem 0; }
+    .cat-nav .nav::-webkit-scrollbar { display: none; }
+    .cat-nav .nav-link {
+      white-space: nowrap; color: var(--muted); border-radius: 999px;
+      padding: .4rem .95rem; font-weight: 500;
+    }
+    .cat-nav .nav-link:hover { color: var(--ink); }
+    .cat-nav .nav-link.active { background: var(--accent); color: var(--accent-ink); }
+    .cat-nav .nav-link:focus-visible,
+    .menu-footer a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* Secciones */
+    .menu-section { padding: 3rem 0 1rem; scroll-margin-top: 7rem; }
+    .menu-section h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 0 0 .25rem; }
+    .menu-section .lead-note { color: var(--muted); margin: 0 0 1.75rem; }
+
+    /* Plato: nombre ..... precio */
+    .dish { padding: .9rem 0; }
+    .dish-head { display: flex; align-items: baseline; gap: .5rem; }
+    .dish-name { font-weight: 600; font-size: 1.1rem; margin: 0; font-family: var(--font-body); }
+    .dish-leader { flex: 1; border-bottom: 2px dotted var(--line); transform: translateY(-.3rem); min-width: 1rem; }
+    .dish-price { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+    .dish-desc { color: var(--muted); margin: .2rem 0 0; max-width: 52ch; }
+    .tag {
+      display: inline-block; margin-left: .35rem; padding: 0 .4rem;
+      border: 1px solid var(--accent); color: var(--accent);
+      border-radius: .35rem; font-size: .72rem; font-weight: 600; vertical-align: .1rem;
+    }
+
+    /* Menú del día */
+    .special { border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: .5rem; padding: 1.25rem 1.5rem; }
+    .special-price { font-family: var(--font-display); font-size: 2rem; line-height: 1; color: var(--accent); }
+    .special h3 { font-size: 1.05rem; font-family: var(--font-body); font-weight: 600; margin: 1.1rem 0 .3rem; }
+    .special ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
+
+    /* Pie */
+    .menu-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 2.5rem 0 3rem; color: var(--muted); }
+    .menu-footer h2 { font-size: 1.3rem; color: var(--ink); }
+    .menu-footer a { color: var(--accent); }
+  </style>
+</head>
+
+<body data-bs-spy="scroll" data-bs-target="#cat-nav" tabindex="0">
+
+  <header class="container hero">
+    <h1>SETTIMO</h1>
+    <p>ARTE - CAFE - CUCINA.</p>
+  </header>
+
+  <!-- Navegación: pestañas principales + categorías de la carta -->
+  <div class="top-nav">
+    <div class="container">
+      <div class="nav main-tabs" role="tablist" aria-label="Secciones del menú">
+        <button class="nav-link active" id="t-carta" data-bs-toggle="tab" data-bs-target="#tab-carta" type="button" role="tab" aria-controls="tab-carta" aria-selected="true">Carta</button>
+        <button class="nav-link" id="t-cafeteria" data-bs-toggle="tab" data-bs-target="#tab-cafeteria" type="button" role="tab" aria-controls="tab-cafeteria" aria-selected="false">Cafetería</button>
+        <button class="nav-link" id="t-dia" data-bs-toggle="tab" data-bs-target="#tab-dia" type="button" role="tab" aria-controls="tab-dia" aria-selected="false">Platos del día</button>
+      </div>
+    </div>
+    <nav class="cat-nav" id="cat-nav-wrap" aria-label="Categorías de la carta">
+      <div class="container" id="cat-nav">
+        <div class="nav">
+          <a class="nav-link" href="#entradas">Entradas</a>
+          <a class="nav-link" href="#principales">Principales</a>
+          <a class="nav-link" href="#postres">Postres</a>
+          <a class="nav-link" href="#bebidas">Bebidas</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <main class="container">
+  <div class="tab-content">
+
+  <!-- ===== PESTAÑA: CARTA ===== -->
+  <div class="tab-pane fade show active" id="tab-carta" role="tabpanel" aria-labelledby="t-carta" tabindex="0">
+
+    <p class="small text-secondary mt-3 mb-0">
+      <span class="tag ms-0">V</span> Vegetariano &nbsp;
+      <span class="tag ms-0">SG</span> Sin gluten &nbsp;
+      <span class="tag ms-0">P</span> Picante
+    </p>
+
+    <!-- ENTRADAS -->
+    <section id="entradas" class="menu-section">
+      <h2>Entradas</h2>
+      <p class="lead-note">Para compartir en la mesa.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Hummus de remolacha<span class="tag" title="Vegetariano">V</span><span class="tag" title="Sin gluten">SG</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$8.50</span>
+            </div>
+            <p class="dish-desc">Garbanzos, remolacha asada, tahini y pan de pita tostado.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Croquetas de jamón</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$9.00</span>
+            </div>
+            <p class="dish-desc">Seis piezas con bechamel cremosa y alioli de limón.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Ensalada de temporada<span class="tag" title="Vegetariano">V</span><span class="tag" title="Sin gluten">SG</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$7.50</span>
+            </div>
+            <p class="dish-desc">Hojas tiernas, fruta fresca, nueces y vinagreta de miel.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Gambas al ajillo<span class="tag" title="Picante">P</span><span class="tag" title="Sin gluten">SG</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$12.00</span>
+            </div>
+            <p class="dish-desc">Salteadas con ajo, guindilla y aceite de oliva.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRINCIPALES -->
+    <section id="principales" class="menu-section">
+      <h2>Principales</h2>
+      <p class="lead-note">Todos incluyen guarnición del día.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Arroz meloso de hongos<span class="tag" title="Vegetariano">V</span><span class="tag" title="Sin gluten">SG</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$16.00</span>
+            </div>
+            <p class="dish-desc">Setas de temporada, parmesano y aceite de trufa.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Filete de res</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$22.00</span>
+            </div>
+            <p class="dish-desc">250 g a la parrilla, papas rústicas y salsa de pimienta.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Pescado del día<span class="tag" title="Sin gluten">SG</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$19.50</span>
+            </div>
+            <p class="dish-desc">A la plancha con verduras salteadas y limón.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Curry de verduras<span class="tag" title="Vegetariano">V</span><span class="tag" title="Picante">P</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$14.00</span>
+            </div>
+            <p class="dish-desc">Leche de coco, garbanzos y arroz basmati.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- POSTRES -->
+    <section id="postres" class="menu-section">
+      <h2>Postres</h2>
+      <p class="lead-note">Hechos en casa cada mañana.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Tarta de queso<span class="tag" title="Vegetariano">V</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$7.00</span>
+            </div>
+            <p class="dish-desc">Horneada, con compota de frutos rojos.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Chocolate caliente con churros<span class="tag" title="Vegetariano">V</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$6.50</span>
+            </div>
+            <p class="dish-desc">Chocolate espeso y churros recién fritos.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- BEBIDAS -->
+    <section id="bebidas" class="menu-section">
+      <h2>Bebidas</h2>
+      <p class="lead-note">Pregunta por la carta de vinos.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Limonada de la casa</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.00</span>
+            </div>
+            <p class="dish-desc">Con menta y jengibre.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Café de especialidad</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$3.00</span>
+            </div>
+            <p class="dish-desc">Espresso, americano, capuchino o latte.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Vino de la casa (copa)</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$6.00</span>
+            </div>
+            <p class="dish-desc">Tinto, blanco o rosado.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Cerveza artesanal</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$5.50</span>
+            </div>
+            <p class="dish-desc">Rubia o tostada, de productores locales.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== PESTAÑA: CAFETERÍA ===== -->
+  <div class="tab-pane fade" id="tab-cafeteria" role="tabpanel" aria-labelledby="t-cafeteria" tabindex="0">
+    <section class="menu-section">
+      <h2>Cafés</h2>
+      <p class="lead-note">Servidos todo el día, desde las 8:00. Pide leche vegetal sin costo extra.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Espresso</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$2.50</span>
+            </div>
+            <p class="dish-desc">Corto e intenso.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Americano</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$2.80</span>
+            </div>
+            <p class="dish-desc">Espresso alargado con agua caliente.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Capuchino</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$3.50</span>
+            </div>
+            <p class="dish-desc">Espresso, leche espumada y cacao.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Latte</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$3.80</span>
+            </div>
+            <p class="dish-desc">Espresso con mucha leche cremosa.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Moka</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.20</span>
+            </div>
+            <p class="dish-desc">Espresso, chocolate y leche vaporizada.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Café frío</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.00</span>
+            </div>
+            <p class="dish-desc">Infusionado en frío durante 12 horas.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="menu-section">
+      <h2>Infusiones y bebidas frías</h2>
+      <p class="lead-note">Sin café, igual de buenas.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Té e infusiones</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$2.80</span>
+            </div>
+            <p class="dish-desc">Negro, verde, manzanilla o menta.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Chai latte</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.00</span>
+            </div>
+            <p class="dish-desc">Té especiado con leche vaporizada.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Chocolate caliente<span class="tag" title="Vegetariano">V</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.00</span>
+            </div>
+            <p class="dish-desc">Espeso, con cacao al 70 %.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Jugo natural</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.50</span>
+            </div>
+            <p class="dish-desc">Naranja o la fruta del día.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="menu-section">
+      <h2>Para acompañar</h2>
+      <p class="lead-note">Horneado cada mañana.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Croissant de mantequilla<span class="tag" title="Vegetariano">V</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$3.00</span>
+            </div>
+            <p class="dish-desc">Hojaldrado y recién salido del horno.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Tostada con aguacate<span class="tag" title="Vegetariano">V</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$6.50</span>
+            </div>
+            <p class="dish-desc">Pan de masa madre, aguacate y limón.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Tostada de jamón y queso</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$6.00</span>
+            </div>
+            <p class="dish-desc">Pan artesanal, gratinada.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Pastel casero<span class="tag" title="Vegetariano">V</span></h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$4.50</span>
+            </div>
+            <p class="dish-desc">Porción del día.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Desayuno completo</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$9.00</span>
+            </div>
+            <p class="dish-desc">Café, jugo, tostada y fruta.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== PESTAÑA: PLATOS DEL DÍA ===== -->
+  <div class="tab-pane fade" id="tab-dia" role="tabpanel" aria-labelledby="t-dia" tabindex="0">
+    <section class="menu-section">
+      <h2>Menú del día</h2>
+      <p class="lead-note">De lunes a viernes, de 12:00 a 16:00.</p>
+      <div class="special">
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+          <span class="fw-semibold">Menú completo</span>
+          <span class="special-price">$13.50</span>
+        </div>
+        <p class="text-secondary small mb-0">Incluye primer plato, segundo plato, postre o café y bebida.</p>
+        <h3>Primer plato</h3>
+        <ul><li>Sopa de verduras</li><li>Ensalada mixta</li><li>Croquetas caseras</li></ul>
+        <h3>Segundo plato</h3>
+        <ul><li>Pollo asado con papas</li><li>Pasta al pesto</li><li>Pescado a la plancha</li></ul>
+        <h3>Postre</h3>
+        <ul><li>Fruta de temporada</li><li>Flan casero</li><li>Café</li></ul>
+      </div>
+    </section>
+    <section class="menu-section">
+      <h2>Plato principal de cada día</h2>
+      <p class="lead-note">Solo el plato principal con guarnición, sin el menú completo.</p>
+      <div class="row">
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Lunes</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$9.50</span>
+            </div>
+            <p class="dish-desc">Lentejas estofadas con chorizo.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Martes</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$9.50</span>
+            </div>
+            <p class="dish-desc">Pasta a la boloñesa.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Miércoles</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$9.50</span>
+            </div>
+            <p class="dish-desc">Arroz con pollo.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Jueves</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$10.50</span>
+            </div>
+            <p class="dish-desc">Pescado frito con ensalada.</p>
+          </article>
+        </div>
+        <div class="col-md-6">
+          <article class="dish">
+            <div class="dish-head">
+              <h3 class="dish-name">Viernes</h3>
+              <span class="dish-leader" aria-hidden="true"></span>
+              <span class="dish-price">$12.00</span>
+            </div>
+            <p class="dish-desc">Paella de mariscos.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  </div><!-- /tab-content -->
+  </main>
+
+  <footer class="menu-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h2>Horario</h2>
+          <p class="mb-0">Martes a jueves: 12:00 – 22:00<br>Viernes y sábado: 12:00 – 23:30<br>Domingo: 12:00 – 17:00</p>
+        </div>
+        <div class="col-md-4">
+          <h2>Dirección</h2>
+          <p class="mb-0">Calle Principal 123<br>Tu ciudad</p>
+        </div>
+        <div class="col-md-4">
+          <h2>Reservas</h2>
+          <p class="mb-0"><a href="tel:+000000000">+00 000 000 000</a><br><a href="mailto:hola@lagranada.example">hola@lagranada.example</a></p>
+        </div>
+      </div>
+      <p class="small mt-4 mb-0">Avisa a tu camarero si tienes alguna alergia o intolerancia. Precios con impuestos incluidos.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Muestra las categorías solo en la pestaña Carta y vuelve al inicio del contenido al cambiar de pestaña
+    const catNav = document.getElementById('cat-nav-wrap');
+    document.querySelectorAll('.main-tabs [data-bs-toggle="tab"]').forEach(function (btn) {
+      btn.addEventListener('shown.bs.tab', function (e) {
+        catNav.classList.toggle('d-none', e.target.id !== 't-carta');
+        window.scrollTo({ top: document.querySelector('.hero').offsetHeight, behavior: 'auto' });
+        if (e.target.id === 't-carta') {
+          var spy = bootstrap.ScrollSpy.getInstance(document.body);
+          if (spy) spy.refresh();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
